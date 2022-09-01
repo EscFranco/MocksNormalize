@@ -33,8 +33,8 @@ socket.on('mensaje', function (data) {
         (JSON.stringify(data).length * 100) /
         JSON.stringify(denormalizedData).length;
 
-        console.log(`Esta es la data normalizada ${JSON.stringify(data).length}`)
-        console.log(`Esta es la data desnormalizada ${JSON.stringify(denormalizedData).length}`)
+    console.log(`Esta es la data normalizada ${JSON.stringify(data).length}`)
+    console.log(`Esta es la data desnormalizada ${JSON.stringify(denormalizedData).length}`)
 
     document.getElementById('porcentaje').innerHTML = `El porcentaje de comprension es ${porcentajeDeCompresion}`
 
@@ -61,6 +61,21 @@ const render = (data) => {
 }
 
 getItems()
+
+const getUser = () => {
+    fetch("http://localhost:8080/username", {
+        method: "GET"
+    })
+        .then((res) => res.json())
+        .then(json => userRender(json))
+}
+
+const userRender = (data) => {
+    let html = data
+    document.getElementById('welcome').innerHTML = html;
+}
+
+getUser()
 
 const chatRender = (data) => {
     let html = data.mensajes.map(function (elem) {
@@ -91,4 +106,21 @@ const addMessage = (event) => {
 
     document.getElementById('texto').value = ''
     document.getElementById('texto').focus()
+}
+
+const logout = () => {
+    fetch("http://localhost:8080/logout", {
+        method: "GET"
+    })
+        .then((res) => res.json())
+        .then (json => (
+            document.getElementById('welcome').innerHTML = json,
+            document.getElementById('main').style.display = 'none',
+            document.getElementById('logout').style.display = 'none'
+            )
+        )
+        .then( setTimeout(function(){
+            
+            window.location.reload();
+        }, 2000))
 }
