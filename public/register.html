@@ -7,13 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
         integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
-    <title>Formulario Login</title>
+    <title>Formulario Register</title>
 </head>
 
 <body>
 
-    <h1 class="text-center pb-5"> LOGIN </h1>
-    <form class="w-50 mx-auto p-3 d-flex flex-column justify-content-center" action="/login" method="post">
+    <h1 class="text-center pb-5"> REGISTER </h1>
+    <form class="w-50 mx-auto p-3 d-flex flex-column justify-content-center" action="/register" method="post">
         <!-- Email input -->
         <div class="form-outline mb-4">
             <input type="email" name="email" class="form-control" />
@@ -27,13 +27,13 @@
         </div>
 
         <!-- Submit button -->
-        <button type="submit" class="btn btn-primary btn-block mb-4">Login</button>
+        <button type="submit" class="btn btn-primary btn-block mb-4">Register</button>
 
-        <!-- Register buttons -->
-        <div class="text-center">
-            <p>Not a member? <a href="register">Register</a></p>
-        </div>
     </form>
+    <!-- Register buttons -->
+    <div class="text-center d-flex justify-content-center">
+        <a type="button" class="w-25" href="login"><button class="btn btn-danger btn-block mb-4">Back to login</button></a>
+    </div>
 </body>
 
 </html>

@@ -107,20 +107,3 @@ const addMessage = (event) => {
     document.getElementById('texto').value = ''
     document.getElementById('texto').focus()
 }
-
-const logout = () => {
-    fetch("http://localhost:8080/logout", {
-        method: "GET"
-    })
-        .then((res) => res.json())
-        .then (json => (
-            document.getElementById('welcome').innerHTML = json,
-            document.getElementById('main').style.display = 'none',
-            document.getElementById('logout').style.display = 'none'
-            )
-        )
-        .then( setTimeout(function(){
-            
-            window.location.reload();
-        }, 2000))
-}

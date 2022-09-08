@@ -4,7 +4,12 @@ import express from 'express'
 import path from 'path';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
+import passport from './passport/passport.js';
 const app = express();
+
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(cookieParser())
 
 // ------------------------- SOCKET.IO ------------------------- //
 
@@ -16,23 +21,44 @@ const io = new Server(server);
 // ------------------------- MONGODB ------------------------- //
 
 import MongoStore from 'connect-mongo'
-const advancedOptions = {useNewUrlParser: true, useUnifiedTopology: true}
+import mongoose from 'mongoose';
 
+const MONGO_URL = "mongodb+srv://francocoder:dbcoder@cluster0.yaxc0y5.mongodb.net/test"
+
+mongoose.connect(MONGO_URL, { useNewUrlParser: true })
+    .then(console.log(`MongoDB connect ${MONGO_URL}`))
+    .catch(err => console.log(err))
+
+const advancedOptions = { useNewUrlParser: true, useUnifiedTopology: true }
+
+// ------------------------- AUTH  ------------------------- //
+
+const isAuth = (req, res, next) => {
+    if (req.isAuthenticated()) {
+        next();
+    } else {
+        res.redirect('/login');
+    }
+};
+
+const isLogged = (req, res, next) => {
+    if (!req.isAuthenticated()) {
+        next();
+    } else {
+        res.redirect('/content');
+    }
+};
 
 // ------------------------- LOGIN ------------------------- //
 
-
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(cookieParser())
 app.use(session({
     store: MongoStore.create({
-        mongoUrl: 'mongodb+srv://francocoder:dbcoder@cluster0.yaxc0y5.mongodb.net/test',
+        mongoUrl: MONGO_URL,
         mongoOptions: advancedOptions
     }),
 
-    secret : 'shhhh',
-    resave : false,
+    secret: 'shhhh',
+    resave: false,
     saveUninitialized: false,
     rolling: true,
     cookie: {
@@ -40,55 +66,53 @@ app.use(session({
     }
 }))
 
-const checkAuth = function (req, res, next) {
-    const usuario = req.session.usuario
-    if (usuario !== undefined) {
-        return next();
-    } else {
-        res.redirect('/login')
-    }
-}
+app.use(passport.initialize());
+app.use(passport.session());
 
-const isLogged = function (req, res, next) {
-    if (req.session.usuario === undefined) {
-        return next();
-    } else {
-        res.redirect('/')
-    }
-}
+
+app.get('/', isAuth, (req, res) => {
+    res.redirect('/content');
+});
 
 app.get('/login', isLogged, (req, res) => {
     res.sendFile(path.resolve('public', 'login.html'));
 });
 
-app.post('/login', (req, res) => {
-    req.session.usuario = req.body.username
-    res.redirect('/')
+app.get('/register', isLogged, (req, res) => {
+    res.sendFile(path.resolve('public', 'register.html'));
+});
+
+app.get('/failRegister', (req, res) => {
+    res.sendFile(path.resolve('public/failRegister.html'));
+});
+
+app.get('/failLogin', (req, res) => {
+    res.sendFile(path.resolve('public/failLogin.html'));
 });
 
 app.get('/logout', (req, res) => {
-    const usuario = req.session.usuario
-    req.session.destroy( err => {
-        if(!err) res.json(`Hasta luego ${usuario}`)
-        else res.send({status: 'Logout Error', body: err})
+    req.session.destroy(err => {
+        if (!err) res.redirect('/login')
+        else res.send({ status: 'Logout Error', body: err })
     })
 });
 
 app.get('/username', (req, res) => {
-    res.json(`Bienvenido a la pagina ${req.session.usuario}`)
+    res.json(`Bienvenido a la pagina ${req.session.passport.user}`)
 });
 
-app.use(checkAuth)
-app.use(express.static("public"));
+app.use('/content/*', isAuth);
+app.use('/content', express.static('public'));
 
 // ------------------------- RUTAS  ------------------------- //
 
 import routerProductos from './routes/routeProductos.js'
+import routerAuth from './routes/routeAuth.js'
 
 app.use('/api/productos-test', routerProductos)
+app.use('/', routerAuth)
 
-
-// ------------------------- SERVER ------------------------- //
+// ------------------------- CHAT ------------------------- //
 
 import { ApiMensajesFS } from './api/mensajes.js';
 
@@ -105,6 +129,8 @@ io.on('connection', async function (socket) {
         io.sockets.emit('mensaje', mensajes); //emitir todos los mensajes a todos los clientes
     });
 });
+
+// ------------------------- SERVER ------------------------- //
 
 const PORT = process.env.PORT || 8080
 const srv = server.listen(PORT, () => {
