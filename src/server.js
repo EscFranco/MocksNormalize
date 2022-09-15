@@ -3,13 +3,17 @@
 import express from 'express'
 import path from 'path';
 import session from 'express-session';
-import cookieParser from 'cookie-parser';
 import passport from './passport/passport.js';
 const app = express();
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use(cookieParser())
+
+// ------------------------- YARGS ------------------------- //
+
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers'
+const { PORT }  = yargs(hideBin(process.argv)).alias({p: 'PORT'}).default({PORT: 8080}).argv;
 
 // ------------------------- SOCKET.IO ------------------------- //
 
@@ -22,11 +26,10 @@ const io = new Server(server);
 
 import MongoStore from 'connect-mongo'
 import mongoose from 'mongoose';
+import { config } from '../config.js';
 
-const MONGO_URL = "mongodb+srv://francocoder:dbcoder@cluster0.yaxc0y5.mongodb.net/test"
-
-mongoose.connect(MONGO_URL, { useNewUrlParser: true })
-    .then(console.log(`MongoDB connect ${MONGO_URL}`))
+mongoose.connect(config.MONGO_URL, { useNewUrlParser: true })
+    .then(console.log(`MongoDB connect ${config.MONGO_URL}`))
     .catch(err => console.log(err))
 
 const advancedOptions = { useNewUrlParser: true, useUnifiedTopology: true }
@@ -53,7 +56,7 @@ const isLogged = (req, res, next) => {
 
 app.use(session({
     store: MongoStore.create({
-        mongoUrl: MONGO_URL,
+        mongoUrl: config.MONGO_URL,
         mongoOptions: advancedOptions
     }),
 
@@ -108,9 +111,26 @@ app.use('/content', express.static('public'));
 
 import routerProductos from './routes/routeProductos.js'
 import routerAuth from './routes/routeAuth.js'
+import routerNumeros from './routes/routeNumeros.js'
 
 app.use('/api/productos-test', routerProductos)
+app.use('/api/randoms', routerNumeros)
 app.use('/', routerAuth)
+
+// ------------------------- PROCESS  ------------------------- //
+
+app.get('/info', (req, res) => {
+
+    res.json({
+        Argumentos: process.argv.slice(2),
+        Sistema: process.platform,
+        NodeVersion : process.version,
+        MemoriaReservada : process.memoryUsage().rss,
+        ExecPath : process.execPath,
+        ProcessID : process.pid,
+        ProyectFolder : process.cwd()
+    })
+});
 
 // ------------------------- CHAT ------------------------- //
 
@@ -132,7 +152,6 @@ io.on('connection', async function (socket) {
 
 // ------------------------- SERVER ------------------------- //
 
-const PORT = process.env.PORT || 8080
 const srv = server.listen(PORT, () => {
     console.log(`Servidor http escuchando en el puerto ${server.address().port}`)
 })

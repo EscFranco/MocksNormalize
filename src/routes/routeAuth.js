@@ -1,6 +1,5 @@
 import { Router } from "express";
 import passport from "passport";
-import path from 'path';
 
 const routerAuth = new Router()
 
