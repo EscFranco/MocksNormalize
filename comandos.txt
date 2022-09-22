@@ -1,0 +1,57 @@
+nodemon src/server.js  
+
+PS C:\Windows\system32> tasklist /fi "imagename eq node.exe"
+
+Nombre de imagen               PID Nombre de sesión Núm. de ses Uso de memor
+========================= ======== ================ =========== ============
+node.exe                     12576 Console                   33    33.560 KB
+node.exe                     11620 Console                   33    70.452 KB
+node.exe                      6308 Console                   33    70.140 KB
+node.exe                     15016 Console                   33    69.880 KB
+node.exe                      8112 Console                   33    71.996 KB
+node.exe                      8868 Console                   33    69.864 KB
+node.exe                      4312 Console                   33    71.772 KB
+node.exe                      3624 Console                   33    70.100 KB
+node.exe                      7416 Console                   33    70.192 KB
+node.exe                      1052 Console                   33    70.180 KB
+PS C:\Windows\system32> taskkill /pid 1052 /f
+Correcto: se terminó el proceso con PID 1052.
+
+forever start -w src/server.js -p 3030
+warn:    --minUptime not set. Defaulting to: 1000ms
+warn:    --spinSleepTime not set. Your script will exit if it does not stay up for at least 1000ms
+info:    Forever processing file: src/server.js
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:9020) Warning: Accessing non-existent property 'padLevels' of module exports inside circular dependency
+PS D:\Programacion\Backend\Mock_Normalizr> forever list
+(node:8584) Warning: Accessing non-existent property 'padLevels' of module exports inside circular dependency
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:8584) Warning: Accessing non-existent property 'padLevels' of module exports inside circular dependency
+data:        uid  command                            script                                                       forever pid   id logfile                          uptime
+data:    [0] yuj8 "C:\Program Files\nodejs\node.exe" D:\Programacion\Backend\Mock_Normalizr\src\server.js -p 3030 12576   11620    C:\Users\Chipi\.forever\yuj8.log 0:0:0:7.173
+
+PS D:\Programacion\Backend\Mock_Normalizr> pm2 start src/server.js --watch
+[PM2] Starting D:\Programacion\Backend\Mock_Normalizr\src\server.js in fork_mode (1 instance)
+[PM2] Done.
+┌─────┬───────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id  │ name      │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├─────┼───────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0   │ server    │ default     │ 1.0.0   │ fork    │ 13028    │ 0s     │ 0    │ online    │ 0%       │ 31.2mb   │ Chipi    │ enabled  │
+└─────┴───────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘   NO SE COMO PASARLE EL SERVER TODO ME TIRA ERROR
+
+
+PS D:\Programacion\Backend\Mock_Normalizr> pm2 start src/server.js --name="Cluster" --watch -i 0
+[PM2] Starting D:\Programacion\Backend\Mock_Normalizr\src\server.js in cluster_mode (0 instance)
+[PM2] Done.
+┌─────┬────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id  │ name       │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├─────┼────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0   │ Cluster    │ default     │ 1.0.0   │ cluster │ 18612    │ 1s     │ 0    │ online    │ 0%       │ 33.2mb   │ Chipi    │ enabled  │
+│ 1   │ Cluster    │ default     │ 1.0.0   │ cluster │ 12752    │ 1s     │ 0    │ online    │ 0%       │ 33.2mb   │ Chipi    │ enabled  │
+│ 2   │ Cluster    │ default     │ 1.0.0   │ cluster │ 15968    │ 1s     │ 0    │ online    │ 0%       │ 32.9mb   │ Chipi    │ enabled  │
+│ 3   │ Cluster    │ default     │ 1.0.0   │ cluster │ 2132     │ 1s     │ 0    │ online    │ 0%       │ 33.4mb   │ Chipi    │ enabled  │
+│ 4   │ Cluster    │ default     │ 1.0.0   │ cluster │ 9584     │ 1s     │ 0    │ online    │ 0%       │ 32.9mb   │ Chipi    │ enabled  │
+│ 5   │ Cluster    │ default     │ 1.0.0   │ cluster │ 3164     │ 1s     │ 0    │ online    │ 0%       │ 32.9mb   │ Chipi    │ enabled  │
+│ 6   │ Cluster    │ default     │ 1.0.0   │ cluster │ 8656     │ 0s     │ 0    │ online    │ 0%       │ 33.1mb   │ Chipi    │ enabled  │
+│ 7   │ Cluster    │ default     │ 1.0.0   │ cluster │ 15448    │ 0s     │ 0    │ online    │ 0%       │ 32.9mb   │ Chipi    │ enabled  │
+└─────┴────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
