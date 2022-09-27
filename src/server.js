@@ -46,42 +46,42 @@ app.use(session({
 }))
 
 app.use(passport.initialize());
-    app.use(passport.session());
+app.use(passport.session());
 
 
-    app.get('/', isAuth, (req, res) => {
-        res.redirect('/content');
-    });
+app.get('/', isAuth, (req, res) => {
+    res.redirect('/content');
+});
 
-    app.get('/login', isLogged, (req, res) => {
-        res.sendFile(path.resolve('public', 'login.html'));
-    });
+app.get('/login', isLogged, (req, res) => {
+    res.sendFile(path.resolve('public', 'login.html'));
+});
 
-    app.get('/register', isLogged, (req, res) => {
-        res.sendFile(path.resolve('public', 'register.html'));
-    });
+app.get('/register', isLogged, (req, res) => {
+    res.sendFile(path.resolve('public', 'register.html'));
+});
 
-    app.get('/failRegister', (req, res) => {
-        res.sendFile(path.resolve('public/failRegister.html'));
-    });
+app.get('/failRegister', (req, res) => {
+    res.sendFile(path.resolve('public/failRegister.html'));
+});
 
-    app.get('/failLogin', (req, res) => {
-        res.sendFile(path.resolve('public/failLogin.html'));
-    });
+app.get('/failLogin', (req, res) => {
+    res.sendFile(path.resolve('public/failLogin.html'));
+});
 
-    app.get('/logout', (req, res) => {
-        req.session.destroy(err => {
-            if (!err) res.redirect('/login')
-            else res.send({ status: 'Logout Error', body: err })
-        })
-    });
+app.get('/logout', (req, res) => {
+    req.session.destroy(err => {
+        if (!err) res.redirect('/login')
+        else res.send({ status: 'Logout Error', body: err })
+    })
+});
 
-    app.get('/username', (req, res) => {
-        res.json(`Bienvenido a la pagina ${req.session.passport.user}`)
-    });
+app.get('/username', (req, res) => {
+    res.json(`Bienvenido a la pagina ${req.session.passport.user}`)
+});
 
-    app.use('/content/*', isAuth);
-    app.use('/content', express.static('public'));
+app.use('/content/*', isAuth);
+app.use('/content', express.static('public'));
 
 // ------------------------- RUTAS  ------------------------- //
 
@@ -98,15 +98,16 @@ app.get('/info', (req, res) => {
     res.json({
         Argumentos: process.argv.slice(2),
         Sistema: process.platform,
-        NodeVersion : process.version,
-        MemoriaReservada : process.memoryUsage().rss,
-        ExecPath : process.execPath,
-        ProcessID : process.pid,
-        ProyectFolder : process.cwd(),
+        NodeVersion: process.version,
+        MemoriaReservada: process.memoryUsage().rss,
+        ExecPath: process.execPath,
+        ProcessID: process.pid,
+        ProyectFolder: process.cwd(),
         ProcesadoresPresentes: numCPUs,
+        port: PORT,
+        modo: MODO
     })
 });
-
 
 // ------------------------- SOCKET.IO ------------------------- //
 
@@ -135,22 +136,37 @@ import cluster from 'cluster';
 import os from 'os'
 const numCPUs = os.cpus().length
 
-if (cluster.isPrimary) {
-    console.log(`PID MASTER ${process.pid}`)
-    for (let i = 0; i < numCPUs; i++) {
-        cluster.fork()
-    }
-    cluster.on('exit', worker => {
-        console.log('Worker', worker.process.pid, 'died', new Date().toLocaleString())
-        cluster.fork()
-    })
-} else {
-    const { PORT } = yargs(hideBin(process.argv)).alias({ p: 'PORT' }).default({ PORT: 8080 }).argv;
+const { PORT, MODO } = yargs(hideBin(process.argv))
+    .alias({ p: 'PORT', m: 'MODO' })
+    .default({ PORT: 8080, MODO: 'FORK' }).argv;
 
+
+if (MODO === 'FORK') {
     const srv = server.listen(PORT, () => {
-        console.log(`Servidor http escuchando en el puerto ${server.address().port}`)
-    })
-    srv.on("error", error => console.log(`Error en servidor ${error}`))
-    
+        console.log(
+            `Servidor Http con Websockets escuchando en el puerto ${srv.address().port
+            } -PID WORKER ${process.pid}`
+        );
+    });
+    srv.on('error', (error) => console.log(`Error en servidor ${error}`));
+}
+
+if (MODO === 'CLUSTER') {
+    if (cluster.isPrimary) {
+        console.log(`PID MASTER ${process.pid}`)
+        for (let i = 0; i < numCPUs; i++) {
+            cluster.fork()
+        }
+        cluster.on('exit', worker => {
+            console.log('Worker', worker.process.pid, 'died', new Date().toLocaleString())
+            cluster.fork()
+        })
+    } else {
+        const srv = server.listen(PORT, () => {
+            console.log(`Servidor http escuchando en el puerto ${server.address().port}`)
+        })
+        srv.on("error", error => console.log(`Error en servidor ${error}`))
+
+    }
 }
 

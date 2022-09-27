@@ -55,3 +55,32 @@ PS D:\Programacion\Backend\Mock_Normalizr> pm2 start src/server.js --name="Clust
 │ 6   │ Cluster    │ default     │ 1.0.0   │ cluster │ 8656     │ 0s     │ 0    │ online    │ 0%       │ 33.1mb   │ Chipi    │ enabled  │
 │ 7   │ Cluster    │ default     │ 1.0.0   │ cluster │ 15448    │ 0s     │ 0    │ online    │ 0%       │ 32.9mb   │ Chipi    │ enabled  │
 └─────┴────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+
+
+
+
+
+---------------------------------------------------------------------- NGINX -------------------------------------------
+
+PRIMERA CONSIGNA
+
+NGINX Primera Consigna
+
+forever start -w src/server.js -p 8080 -m FORK //MODO FORK port 8080
+
+forever start -w src/server.js -p 8081 -m CLUSTER //MODO CLUSTER port 8081 para api/randoms
+
+
+SEGUNDA CONSIGNA 
+
+PS D:\Programacion\Backend\Mock_Normalizr> forever list
+(node:21152) Warning: Accessing non-existent property 'padLevels' of module exports inside circular dependency
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:21152) Warning: Accessing non-existent property 'padLevels' of module exports inside circular dependency
+info:    Forever processes running
+data:        uid  command                            script                                                                  forever pid   id logfile                          uptime
+data:    [0] Cimm "C:\Program Files\nodejs\node.exe" D:\Programacion\Backend\Mock_Normalizr\src\server.js -p 8080 -m FORK    16816   19016    C:\Users\Chipi\.forever\Cimm.log 0:0:0:39.249
+data:    [1] db2j "C:\Program Files\nodejs\node.exe" D:\Programacion\Backend\Mock_Normalizr\src\server.js -p 8082 -m CLUSTER 13208   19072    C:\Users\Chipi\.forever\db2j.log 0:0:0:31.594
+data:    [2] ysAB "C:\Program Files\nodejs\node.exe" D:\Programacion\Backend\Mock_Normalizr\src\server.js -p 8083 -m CLUSTER 17600   6400     C:\Users\Chipi\.forever\ysAB.log 0:0:0:25.478
+data:    [3] YLz7 "C:\Program Files\nodejs\node.exe" D:\Programacion\Backend\Mock_Normalizr\src\server.js -p 8084 -m CLUSTER 12512   3444     C:\Users\Chipi\.forever\YLz7.log 0:0:0:18.16
+data:    [4] VQPy "C:\Program Files\nodejs\node.exe" D:\Programacion\Backend\Mock_Normalizr\src\server.js -p 8085 -m CLUSTER 20276   20336    C:\Users\Chipi\.forever\VQPy.log 0:0:0:10.656
