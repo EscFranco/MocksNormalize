@@ -1,8 +1,7 @@
 // ------------- FILESYSTEM ------------- //
 import fs from 'fs'
 import normalizeData from '../utils/normalize.js';
-import util from 'util'
-
+import logger from '../logger/logger.js';
 // ------------- CLASS ------------- //
 
 export default class ContMsj {
@@ -16,7 +15,7 @@ export default class ContMsj {
             const normalize = normalizeData(load)
             return normalize;
         } catch (error) {
-            console.log(`Hubo un error ${error}`);
+            logger.error(`Hubo un error ${error}`);
         }
     }
 

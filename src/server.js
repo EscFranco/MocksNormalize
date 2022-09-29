@@ -4,6 +4,9 @@ import express from 'express'
 import path from 'path';
 import session from 'express-session';
 import passport from './passport/passport.js';
+import compression from 'compression';
+import logger from './logger/logger.js';
+
 const app = express();
 
 app.use(express.json())
@@ -21,8 +24,8 @@ import mongoose from 'mongoose';
 import { config } from '../config.js';
 
 mongoose.connect(config.MONGO_URL, { useNewUrlParser: true })
-    .then(console.log(`MongoDB connect ${config.MONGO_URL}`))
-    .catch(err => console.log(err))
+    .then(logger.info(`MongoDB connect ${config.MONGO_URL}`))
+    .catch(err => logger.error(err))
 
 const advancedOptions = { useNewUrlParser: true, useUnifiedTopology: true }
 
@@ -50,26 +53,38 @@ app.use(passport.session());
 
 
 app.get('/', isAuth, (req, res) => {
+    const { url, method } = req
+    logger.info(`Metodo ${method} a la ruta ${url}`)
     res.redirect('/content');
 });
 
 app.get('/login', isLogged, (req, res) => {
+    const { url, method } = req
+    logger.info(`Metodo ${method} a la ruta ${url}`)
     res.sendFile(path.resolve('public', 'login.html'));
 });
 
 app.get('/register', isLogged, (req, res) => {
+    const { url, method } = req
+    logger.info(`Metodo ${method} a la ruta ${url}`)
     res.sendFile(path.resolve('public', 'register.html'));
 });
 
 app.get('/failRegister', (req, res) => {
+    const { url, method } = req
+    logger.info(`Metodo ${method} a la ruta ${url}`)
     res.sendFile(path.resolve('public/failRegister.html'));
 });
 
 app.get('/failLogin', (req, res) => {
+    const { url, method } = req
+    logger.info(`Metodo ${method} a la ruta ${url}`)
     res.sendFile(path.resolve('public/failLogin.html'));
 });
 
 app.get('/logout', (req, res) => {
+    const { url, method } = req
+    logger.info(`Metodo ${method} a la ruta ${url}`)
     req.session.destroy(err => {
         if (!err) res.redirect('/login')
         else res.send({ status: 'Logout Error', body: err })
@@ -77,6 +92,8 @@ app.get('/logout', (req, res) => {
 });
 
 app.get('/username', (req, res) => {
+    const { url, method } = req
+    logger.info(`Metodo ${method} a la ruta ${url}`)
     res.json(`Bienvenido a la pagina ${req.session.passport.user}`)
 });
 
@@ -90,10 +107,26 @@ import routerAuth from './routes/routeAuth.js'
 import routerNumeros from './routes/routeNumeros.js'
 
 app.use('/api/productos-test', routerProductos)
-app.use('/api/randoms', routerNumeros)
+// app.use('/api/randoms', routerNumeros)
 app.use('/', routerAuth)
 
-app.get('/info', (req, res) => {
+app.get('/info', compression(), (req, res) => {
+
+    const { url, method } = req
+    logger.info(`Metodo ${method} a la ruta ${url}`)
+
+    // console.log({
+    //     Argumentos: process.argv.slice(2),
+    //     Sistema: process.platform,
+    //     NodeVersion: process.version,
+    //     MemoriaReservada: process.memoryUsage().rss,
+    //     ExecPath: process.execPath,
+    //     ProcessID: process.pid,
+    //     ProyectFolder: process.cwd(),
+    //     ProcesadoresPresentes: numCPUs,
+    //     port: PORT,
+    //     modo: MODO
+    // })
 
     res.json({
         Argumentos: process.argv.slice(2),
@@ -107,6 +140,33 @@ app.get('/info', (req, res) => {
         port: PORT,
         modo: MODO
     })
+});
+
+app.get('/nozipinfo', (req, res) => {
+
+    const { url, method } = req
+    logger.info(`Metodo ${method} a la ruta ${url}`)
+
+    res.json({
+        Argumentos: process.argv.slice(2),
+        Sistema: process.platform,
+        NodeVersion: process.version,
+        MemoriaReservada: process.memoryUsage().rss,
+        ExecPath: process.execPath,
+        ProcessID: process.pid,
+        ProyectFolder: process.cwd(),
+        ProcesadoresPresentes: numCPUs,
+        port: PORT,
+        modo: MODO
+    })
+});
+
+app.use((req, res) => {
+    const { method, url } = req;
+    logger.warn( `Ruta ${method} ${url} no implementada.`);
+    res.json({
+        message: `Ruta ${method} ${url} no implementada.`,
+    });
 });
 
 // ------------------------- SOCKET.IO ------------------------- //
@@ -143,29 +203,29 @@ const { PORT, MODO } = yargs(hideBin(process.argv))
 
 if (MODO === 'FORK') {
     const srv = server.listen(PORT, () => {
-        console.log(
+        logger.info(
             `Servidor Http con Websockets escuchando en el puerto ${srv.address().port
             } -PID WORKER ${process.pid}`
         );
     });
-    srv.on('error', (error) => console.log(`Error en servidor ${error}`));
+    srv.on('error', (error) => logger.error(`Error en servidor ${error}`));
 }
 
 if (MODO === 'CLUSTER') {
     if (cluster.isPrimary) {
-        console.log(`PID MASTER ${process.pid}`)
+        logger.info(`PID MASTER ${process.pid}`)
         for (let i = 0; i < numCPUs; i++) {
             cluster.fork()
         }
         cluster.on('exit', worker => {
-            console.log('Worker', worker.process.pid, 'died', new Date().toLocaleString())
+            logger.info('Worker', worker.process.pid, 'died', new Date().toLocaleString())
             cluster.fork()
         })
     } else {
         const srv = server.listen(PORT, () => {
-            console.log(`Servidor http escuchando en el puerto ${server.address().port}`)
+            logger.info(`Servidor http escuchando en el puerto ${server.address().port}`)
         })
-        srv.on("error", error => console.log(`Error en servidor ${error}`))
+        srv.on("error", error => logger.error(`Error en servidor ${error}`))
 
     }
 }
