@@ -42,7 +42,7 @@ socket.on('mensaje', function (data) {
 });
 
 const getItems = () => {
-    fetch("http://localhost:8080/api/productos-test", {
+    fetch("https://coderbackend-31020.herokuapp.com/api/productos-test", {
         method: "GET"
     })
         .then((res) => res.json())
@@ -63,7 +63,7 @@ const render = (data) => {
 getItems()
 
 const getUser = () => {
-    fetch("http://localhost:8080/username", {
+    fetch("https://coderbackend-31020.herokuapp.com/username", {
         method: "GET"
     })
         .then((res) => res.json())
