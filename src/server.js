@@ -6,11 +6,18 @@ import session from 'express-session';
 import passport from './passport/passport.js';
 import compression from 'compression';
 import logger from './logger/logger.js';
+import cors from 'cors'
 
 const app = express();
 
+const corsOptions = {
+    origin: ['http://localhost:8080', 'https://coderbackend-31020.herokuapp.com/'],
+    credentials: true,
+};
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(cors(corsOptions))
 
 // ------------------------- YARGS ------------------------- //
 
