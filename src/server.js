@@ -198,7 +198,7 @@ const numCPUs = os.cpus().length
 
 const { PORT, MODO } = yargs(hideBin(process.argv))
     .alias({ p: 'PORT', m: 'MODO' })
-    .default({ PORT: 8080, MODO: 'FORK' }).argv;
+    .default({ PORT: process.env.PORT || 8080, MODO: 'FORK' }).argv;
 
 
 if (MODO === 'FORK') {
