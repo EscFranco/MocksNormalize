@@ -107,7 +107,7 @@ import routerAuth from './routes/routeAuth.js'
 import routerNumeros from './routes/routeNumeros.js'
 
 app.use('/api/productos-test', routerProductos)
-// app.use('/api/randoms', routerNumeros)
+app.use('/api/randoms', routerNumeros)
 app.use('/', routerAuth)
 
 app.get('/info', compression(), (req, res) => {
