@@ -3,8 +3,8 @@
 let productos = []
 
 const getItems = () => {
-    fetch("http://localhost:8080/api/productos-test", {
-    // fetch("https://coderbackend-31020.herokuapp.com/api/productos-test", {
+    // fetch("http://localhost:8080/api/productos-test", {
+    fetch("https://coderbackend-31020.herokuapp.com/api/productos-test", {
         method: "GET"
     })
         .then((res) => res.json())
@@ -59,7 +59,7 @@ const addToCart = (id) => {
 // --------------------- USUARIO ------------------------ //
 
 const getUser = () => {
-    fetch("http://localhost:8080/username", {
+    fetch("https://coderbackend-31020.herokuapp.com/username", {
     // fetch("https://coderbackend-31020.herokuapp.com/username", {
         method: "GET"
     })

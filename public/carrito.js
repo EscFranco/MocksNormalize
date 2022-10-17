@@ -58,7 +58,7 @@ const deleteFromCart = (id) => {
 const finalizarPedido = async () => {
 
     let usuario = {}
-    const response = await fetch(`http://localhost:8080/username`);
+    const response = await fetch(`https://coderbackend-31020.herokuapp.com/username`);
     const json = await response.json();
 
     usuario = json
@@ -71,7 +71,7 @@ const finalizarPedido = async () => {
         precioTotal : totalCompra,
         date: date
     }
-    fetch("http://localhost:8080/compraFinal", {
+    fetch("https://coderbackend-31020.herokuapp.com/compraFinal", {
         method: "POST",
         body: JSON.stringify(ordenFinal),
         headers: {
