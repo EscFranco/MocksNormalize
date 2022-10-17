@@ -1,69 +1,66 @@
-let socket = io.connect();
+// --------------------- PRODUCTOS ------------------------ //
 
-socket.on('mensaje', function (data) {
-    const author = new normalizr.schema.Entity(
-        'authors',
-        {},
-        { idAttribute: 'id' }
-    );
-
-    const mensaje = new normalizr.schema.Entity(
-        'mensaje',
-        {
-            author: author,
-        },
-        { idAttribute: 'hora' }
-    );
-
-    const mensajes = new normalizr.schema.Entity(
-        'mensajes',
-        {
-            mensajes: [mensaje],
-        },
-        { idAttribute: 'id' }
-    )
-
-    const denormalizedData = normalizr.denormalize(
-        data.result,
-        mensajes,
-        data.entities
-    );
-
-    const porcentajeDeCompresion =
-        (JSON.stringify(data).length * 100) /
-        JSON.stringify(denormalizedData).length;
-
-    console.log(`Esta es la data normalizada ${JSON.stringify(data).length}`)
-    console.log(`Esta es la data desnormalizada ${JSON.stringify(denormalizedData).length}`)
-
-    document.getElementById('porcentaje').innerHTML = `El porcentaje de comprension es ${porcentajeDeCompresion}`
-
-    chatRender(denormalizedData)
-});
+let productos = []
 
 const getItems = () => {
-    fetch("https://coderbackend-31020.herokuapp.com/api/productos-test", {
+    fetch("http://localhost:8080/api/productos-test", {
+    // fetch("https://coderbackend-31020.herokuapp.com/api/productos-test", {
         method: "GET"
     })
         .then((res) => res.json())
-        .then(json => render(json))
+        .then(data => productos = data)
+        .then(() => renderProductos())
 }
 
-const render = (data) => {
-    let html = data.map(function (elem, index) {
+const renderProductos = () => {
+    let html = productos.map(function (elem, index) {
         return (`<tr>
-                    <td class="align-middle">${elem.producto}</td>
+                    <td class="align-middle">${elem.gusto}</td>
                     <td class="align-middle">$${elem.precio}</td>
-                    <td class="align-middle"><img src=${elem.imagen} alt="imagen del producto" style="width: 100px" /></td>
+                    <td class="align-middle"><img src=${elem.img} alt="imagen del producto" style="width: 100px" /></td>
+                    <td> <button type="button" class="btn btn-success" onclick="addToCart(${elem.id})"">Pedir</button> </td>                    
                 </tr>`)
     }).join(" ");
     document.getElementById('tabla').innerHTML = html;
 }
 
+
 getItems()
 
+// --------------------- CARRITO ------------------------ //
+
+let listaCarrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+const addToCart = (id) => {
+
+    if (listaCarrito.some((item) => item.id === id)) {
+    
+        listaCarrito = listaCarrito.map ((item) => {
+            let cantidad = item.cantidad
+            cantidad++
+
+        return {
+            ...item,
+            cantidad
+        }
+        })
+        
+    } else {
+        const item = productos.find((product) => product.id === id)
+        listaCarrito.push({
+            ...item,
+            cantidad : 1
+        })
+    }
+
+    localStorage.setItem("carrito",JSON.stringify(listaCarrito))
+}
+
+// --------------------- USUARIO ------------------------ //
+
 const getUser = () => {
-    fetch("https://coderbackend-31020.herokuapp.com/username", {
+    fetch("http://localhost:8080/username", {
+    // fetch("https://coderbackend-31020.herokuapp.com/username", {
         method: "GET"
     })
         .then((res) => res.json())
@@ -71,39 +68,8 @@ const getUser = () => {
 }
 
 const userRender = (data) => {
-    let html = data
-    document.getElementById('welcome').innerHTML = html;
+    let html = data.usuario
+    document.getElementById('welcome').innerHTML = `Bienvenido a la pagina ${html}`;
 }
 
 getUser()
-
-const chatRender = (data) => {
-    let html = data.mensajes.map(function (elem) {
-        return (`<div>
-            <strong style="color: blue">${elem.author.id} - <span style="color: brown">${elem.hora}</span></strong>: 
-            <em style="color: green">${elem.text}</em> </div>`)
-    }).join(" ");
-    document.getElementById('chat').innerHTML = html;
-}
-
-const addMessage = (event) => {
-
-    event.preventDefault();
-
-    let mensaje = {
-        author: {
-            id: event.target.email.value,
-            nombre: event.target.nombre.value,
-            apellido: event.target.apellido.value,
-            alias: event.target.alias.value,
-            edad: event.target.edad.value,
-        },
-        text: event.target.texto.value,
-        hora: new Date().toLocaleString('es-AR')
-    };
-
-    socket.emit('new-message', mensaje); // new-message es el nombre del evento (recordatorio)
-
-    document.getElementById('texto').value = ''
-    document.getElementById('texto').focus()
-}

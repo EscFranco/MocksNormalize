@@ -4,6 +4,7 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from "passport-local";
 import { User } from '../models/Users.js';
 import bcrypt from 'bcryptjs'
+import { sendEmail } from '../mensajes/mail.js'
 
 passport.serializeUser((user, done) => {
     done(null, user.email);
@@ -16,16 +17,30 @@ passport.deserializeUser((email, done) => {
 });
 
 passport.use('register', new LocalStrategy({ passReqToCallback: true, usernameField: "email" }, (req, email, password, done) => {
+    const name = req.body.name
+    const address = req.body.address
+    const age = req.body.age
+    const phone = req.body.phone
     User.findOne({ email: email })
         .then((user) => {
             if (!user) {
-                const newUser = new User({ email, password });
+                const newUser = new User({ email, password, name, address, age, phone });
                 bcrypt.genSalt(10, (err, salt) => {
                     bcrypt.hash(newUser.password, salt, (err, hash) => {
                         if (err) console.log(err);
                         newUser.password = hash;
                         newUser.save()
                             .then((user) => {
+                                sendEmail(
+                                    'Nuevo Registro',
+                                    `
+                                    <p><b>Datos de nuevo usuario:</b></p>
+                                    <h3>${name} [${age}]</h3>
+                                    <p>Email: ${email}</p>
+                                    <p>Dirección: ${address}</p>
+                                    <p>Teléfono: ${phone}</p>
+                                   `
+                                )
                                 return done(null, user);
                             })
                             .catch((err) => {

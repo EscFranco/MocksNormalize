@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/normalizr@3.6.1/dist/normalizr.browser.min.js
+    "></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <title>Informacion</title>
+</head>
+
+<body>
+
+    <head>
+        <h1 class="text-center"> Panel de Informacion</h1>
+
+        <nav class="d-flex">
+            <ul class="nav flex-grow-1 justify-content-center">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/cart">Carrito</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/informacion">Informacion</a>
+                </li>
+            </ul>
+            <form action="/logout">
+                <button class="btn btn-link " id="logout"> Logout </button>
+            </form>
+        </nav>
+
+        <main>
+
+            <h2> Esta sera la direccion de su entrega </h2>
+            <div class="card mb-3" style="max-width: 540px;" id="userInformation">
+
+            </div>
+
+            <div class="mt-5">
+                <h4 id="porcentaje"> Si tiene algun problema no dude en contactarse </h4>
+                <h5 class="text-center">Chat Online</h5>
+                <div class="container mt-3">
+                    <form class="row" onsubmit="return addMessage(event)" autocomplete="off">
+                        <div class="col-4">
+                            <label for="nombre" class="form-label">Nombre</label>
+                            <input type="nombre" id="nombre" class="form-control my-2 mr-2" placeholder="Nombre"
+                                required>
+                        </div>
+                        <div class="col-4">
+                            <label for="apellido" class="form-label">Apellido</label>
+                            <input type="apellido" id="apellido" class="form-control my-2 mr-2" placeholder="Apellido"
+                                required>
+                        </div>
+                        <div class="col-4">
+                            <label for="alias" class="form-label">Alias</label>
+                            <input type="alias" id="alias" class="form-control my-2 mr-2" placeholder="Alias" required>
+                        </div>
+                        <div class="col-4">
+                            <label for="avatar" class="form-label">Avatar</label>
+                            <input type="avatar" id="avatar" class="form-control my-2 mr-2" placeholder="Avatar"
+                                required>
+                        </div>
+                        <div class="col-4">
+                            <label for="email" class="form-label">Mail</label>
+                            <input type="email" id="email" class="form-control my-2 mr-2" placeholder="Email" required>
+                        </div>
+                        <div class="col-4">
+                            <label for="edad" class="form-label">Edad</label>
+                            <input type="edad" id="edad" class="form-control my-2 mr-2" placeholder="Edad" required>
+                        </div>
+                        <div class="w-100">
+                            <hr>
+                            <hr style="border: solid black 1px">
+                            <div id="chat"> </div>
+                            <hr style="border: solid black 1px">
+                        </div>
+                        <div class="w-50 col">
+                            <label for="text" class="form-label">Texto</label>
+                            <input type="text" id="texto" class="form-control my-2 mr-2" placeholder="Comenta">
+                            <button class="btn btn-primary" type="submit">Enviar! </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+        <script src="content/informacion.js"></script>
+</body>
+
+</html>

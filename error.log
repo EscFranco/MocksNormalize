@@ -1,1 +1,10 @@
 {"code":8000,"codeName":"AtlasError","level":"error","ok":0}
+{"level":"error","message":"error al subir una orden TypeError: finalOrder.insertOne is not a function"}
+{"level":"error","message":"error al subir una orden TypeError: finalOrder.insertOne is not a function"}
+{"level":"error","message":"error al subir una orden ReferenceError: errorLogger is not defined"}
+{"level":"error","message":"error al subir una orden ReferenceError: errorLogger is not defined"}
+{"level":"error","message":"error al subir una orden ReferenceError: errorLogger is not defined"}
+{"level":"error","message":"error al subir una orden ReferenceError: errorLogger is not defined"}
+{"code":21606,"level":"error","moreInfo":"https://www.twilio.com/docs/errors/21606","status":400}
+{"code":21606,"level":"error","moreInfo":"https://www.twilio.com/docs/errors/21606","status":400}
+{"code":21606,"level":"error","moreInfo":"https://www.twilio.com/docs/errors/21606","status":400}

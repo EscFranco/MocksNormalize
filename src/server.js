@@ -4,7 +4,6 @@ import express from 'express'
 import path from 'path';
 import session from 'express-session';
 import passport from './passport/passport.js';
-import compression from 'compression';
 import logger from './logger/logger.js';
 import cors from 'cors'
 
@@ -65,6 +64,18 @@ app.get('/', isAuth, (req, res) => {
     res.redirect('/content');
 });
 
+app.get('/cart', isAuth, (req, res) => {
+    const { url, method } = req
+    logger.info(`Metodo ${method} a la ruta ${url}`)
+    res.sendFile(path.resolve('public', 'carrito.html'));
+});
+
+app.get('/informacion', isAuth, (req, res) => {
+    const { url, method } = req
+    logger.info(`Metodo ${method} a la ruta ${url}`)
+    res.sendFile(path.resolve('public', 'informacion.html'));
+});
+
 app.get('/login', isLogged, (req, res) => {
     const { url, method } = req
     logger.info(`Metodo ${method} a la ruta ${url}`)
@@ -101,80 +112,27 @@ app.get('/logout', (req, res) => {
 app.get('/username', (req, res) => {
     const { url, method } = req
     logger.info(`Metodo ${method} a la ruta ${url}`)
-    res.json(`Bienvenido a la pagina ${req.session.passport.user}`)
+    res.json(
+        {   usuario: req.user.name,
+            direccion: req.user.address,
+            phone: req.user.phone,
+            email: req.user.email,
+        }
+    )
 });
 
 app.use('/content/*', isAuth);
-app.use('/content', express.static('public'));
+app.use('/content', isAuth, express.static('public'));
 
 // ------------------------- RUTAS  ------------------------- //
 
 import routerProductos from './routes/routeProductos.js'
 import routerAuth from './routes/routeAuth.js'
-import routerNumeros from './routes/routeNumeros.js'
+import routerOrder from './routes/routeOrder.js'
 
 app.use('/api/productos-test', routerProductos)
-// app.use('/api/randoms', routerNumeros)
 app.use('/', routerAuth)
-
-app.get('/info', compression(), (req, res) => {
-
-    const { url, method } = req
-    logger.info(`Metodo ${method} a la ruta ${url}`)
-
-    // console.log({
-    //     Argumentos: process.argv.slice(2),
-    //     Sistema: process.platform,
-    //     NodeVersion: process.version,
-    //     MemoriaReservada: process.memoryUsage().rss,
-    //     ExecPath: process.execPath,
-    //     ProcessID: process.pid,
-    //     ProyectFolder: process.cwd(),
-    //     ProcesadoresPresentes: numCPUs,
-    //     port: PORT,
-    //     modo: MODO
-    // })
-
-    res.json({
-        Argumentos: process.argv.slice(2),
-        Sistema: process.platform,
-        NodeVersion: process.version,
-        MemoriaReservada: process.memoryUsage().rss,
-        ExecPath: process.execPath,
-        ProcessID: process.pid,
-        ProyectFolder: process.cwd(),
-        ProcesadoresPresentes: numCPUs,
-        port: PORT,
-        modo: MODO
-    })
-});
-
-app.get('/nozipinfo', (req, res) => {
-
-    const { url, method } = req
-    logger.info(`Metodo ${method} a la ruta ${url}`)
-
-    res.json({
-        Argumentos: process.argv.slice(2),
-        Sistema: process.platform,
-        NodeVersion: process.version,
-        MemoriaReservada: process.memoryUsage().rss,
-        ExecPath: process.execPath,
-        ProcessID: process.pid,
-        ProyectFolder: process.cwd(),
-        ProcesadoresPresentes: numCPUs,
-        port: PORT,
-        modo: MODO
-    })
-});
-
-app.use((req, res) => {
-    const { method, url } = req;
-    logger.warn( `Ruta ${method} ${url} no implementada.`);
-    res.json({
-        message: `Ruta ${method} ${url} no implementada.`,
-    });
-});
+app.use('/', routerOrder)
 
 // ------------------------- SOCKET.IO ------------------------- //
 
