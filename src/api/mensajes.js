@@ -1,4 +1,4 @@
-import ContMsj from '../container/ContMsj.js';
+import ContMsj from '../persistencia/container/ContMsj.js';
 
 class ApiMensajesFS extends ContMsj {
     constructor() {

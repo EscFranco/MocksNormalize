@@ -1,16 +1,11 @@
 import { Router } from "express";
-import ContenedorMongoDB from "../container/ContProductos.js";
-
+import products from "../controllers/products.js";
 
 // ------------------- PRODUCTOS ------------------- //
 
 const routerProductos = new Router()
-const ApiProductos = new ContenedorMongoDB
 
-routerProductos.get('/', async (req, res) => {
-    let answer = await ApiProductos.getAll()
-    res.json(answer)
-})
+routerProductos.get('/', products.getProductsController)
 
 
 export default routerProductos;

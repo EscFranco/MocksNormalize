@@ -2,7 +2,8 @@
 
 const renderProfile = async () => {
 
-    const response = await fetch(`https://coderbackend-31020.herokuapp.com/username`);
+    // const response = await fetch(`https://coderbackend-31020.herokuapp.com/username`);
+    const response = await fetch(`http://localhost:8080/username`);
     const json = await response.json();
 
     let html = (`

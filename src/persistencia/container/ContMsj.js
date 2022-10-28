@@ -1,7 +1,7 @@
 // ------------- FILESYSTEM ------------- //
 import fs from 'fs'
-import normalizeData from '../utils/normalize.js';
-import logger from '../logger/logger.js';
+import normalizeData from '../../utils/normalize.js';
+import logger from '../../logger/logger.js';
 // ------------- CLASS ------------- //
 
 export default class ContMsj {
